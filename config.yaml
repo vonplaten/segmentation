@@ -1,0 +1,35 @@
+trainer:
+    name: train1.Train1
+    num_epochs: 20
+    lr: 1e-3
+
+dataloader:
+    name: simulation.SimulationDataloaderFactory
+    train_size: 10
+    val_size: 2
+    test_size: 5
+
+    train_batch_size: 25
+    val_batch_size: 25
+    test_batch_size: 25
+
+    train_num_workers: 0
+    val_num_workers: 0
+    test_num_workers: 0
+
+    train_shuffle: False
+    val_shuffle: False
+    test_shuffle: False
+
+    print_folder: out/modelinput/
+    print_input_num: 3
+
+model:
+    name: resnetunet.ResnetUnet18
+    state: # out/model/model_0.11.pth
+    print_folder: out/model/
+    n_class: 6
+
+inferencer:
+    name: inf1.Inf1
+    print_inf_num: 4
