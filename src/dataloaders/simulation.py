@@ -15,8 +15,8 @@ class SimulationDataloaderFactory(DataloaderFactory):
             self.trainloader = torch.utils.data.DataLoader(
                 dataset=train_set,
                 batch_size=self.config.dataloader_trainbatchsize,
-                shuffle=self.config.dataloader_trainshuffle,
-                num_workers=self.config.dataloader_trainnumworkers)
+                shuffle=False,
+                num_workers=0)
         return self.trainloader
 
     def getvalloader(self):
@@ -25,8 +25,8 @@ class SimulationDataloaderFactory(DataloaderFactory):
             self.valloader = torch.utils.data.DataLoader(
                 dataset=val_set,
                 batch_size=self.config.dataloader_valbatchsize,
-                shuffle=self.config.dataloader_valshuffle,
-                num_workers=self.config.dataloader_valnumworkers)
+                shuffle=False,
+                num_workers=0)
         return self.valloader
 
     def gettestloader(self):
@@ -35,8 +35,8 @@ class SimulationDataloaderFactory(DataloaderFactory):
             self.testloader = torch.utils.data.DataLoader(
                 dataset=test_set,
                 batch_size=self.config.dataloader_testbatchsize,
-                shuffle=self.config.dataloader_testshuffle,
-                num_workers=self.config.dataloader_testnumworkers)
+                shuffle=False,
+                num_workers=0)
         return self.testloader
 
 

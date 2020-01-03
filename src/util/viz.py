@@ -31,7 +31,7 @@ def print_images_masks(images: tuple, masks: tuple, printfolder: str, printfile:
         os.makedirs(printfolder)
     for i in range(len(images)):
         pil_im = Image.fromarray(getpaintedimage(images[i], masks[i]))
-        pil_im.save(os.path.join(printfolder, f"{i}_image_{printfile}"))
+        pil_im.save(os.path.join(printfolder, f"{i}_{printfile}"))
 
 def getpaintedimage(image: np.ndarray, masks: np.ndarray) -> np.ndarray:
     '''Paints mask on image

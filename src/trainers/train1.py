@@ -14,9 +14,12 @@ import src.util.transform
 class Train1(src.trainers.base.TrainerBase):
     def __init__(self, dataloaderfactory, model, state_path):
         super().__init__(dataloaderfactory, model, state_path)
+
+        # Freeze encoder params
         for l in self.model.encoder_layers:
             for param in l.parameters():
                 param.requires_grad = False
+
         self.optimizer = torch.optim.Adam(
             filter(lambda p: p.requires_grad, self.model.parameters()),
             lr=self.config.trainer_lr)
@@ -27,19 +30,18 @@ class Train1(src.trainers.base.TrainerBase):
             min_lr=1e-7,
             patience=2,
             verbose=True)
-        # scheduler = torch.optim.lr_scheduler.StepLR(optimizer_ft, step_size=10, gamma=0.1)
 
     def run(self):
-        # print sample of model input and label
-        if self.config.dataloader_print_input_num > 0:
-            images, masks = next(iter(self.trainloader))
-            src.util.viz.print_images_masks(
-                tuple(src.util.transform.reverse_transform(x) for x in images[:self.config.dataloader_print_input_num]),
-                tuple(np.transpose(x, (1, 2, 0)) for x in masks[:self.config.dataloader_print_input_num].clone().numpy().astype(np.uint8)),
-                printfolder=os.path.join(os.getcwd(), self.config.dataloader_printfolder),
-                printfile="input.png")
+        # print input and label
+        images, masks = next(iter(self.trainloader))
+        src.util.viz.print_images_masks(
+            tuple(src.util.transform.reverse_transform(x) for x in images[:3]),
+            tuple(np.transpose(x, (1, 2, 0)) for x in masks[:3].clone().numpy().astype(np.uint8)),
+            printfolder=os.path.join(os.getcwd(), self.config.output_printfolder),
+            printfile="traininput.png")
 
-        best_loss = 1e10
+        # Train and validate
+        best_loss = 0.2
         trloss = None
         valoss = None
         for epnr in range(self.config.trainer_numepochs):
@@ -47,17 +49,18 @@ class Train1(src.trainers.base.TrainerBase):
             trloss = self._train()
             valoss = self._validate()
 
-        if valoss < best_loss:
-            print("saving best model")
-            best_loss = valoss
-            state = {
-                "best_loss": best_loss,
-                "state_dict": self.model.state_dict(),
-                "optimizer": self.optimizer.state_dict(),
-            }
-            savepath = os.path.join(self.config.model_printfolder, f"model_{best_loss:.2f}.pth")
-            torch.save(state, savepath)
-            print("Ended train!")
+            # Save model
+            if valoss < best_loss:
+                print("saving best model")
+                best_loss = valoss
+                state = {
+                    "best_loss": best_loss,
+                    "state_dict": self.model.state_dict(),
+                    "optimizer": self.optimizer.state_dict(),
+                }
+                savepath = os.path.join(self.config.output_modelfolder, f"model_{best_loss:.3f}.pth")
+                torch.save(state, savepath)
+                print("Ended train!")
 
     def _train(self):
         self.model.train()
