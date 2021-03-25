@@ -6,4 +6,4 @@ pandas==0.25.3
 colorlover==0.3.0
 torchvision==0.4.1a0+d94043a
 Pillow==7.0.0
-PyYAML==5.2
+PyYAML==5.4
